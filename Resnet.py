@@ -44,8 +44,8 @@ if __name__ == "__main__":
     ])
 
     
-    train_dataset = CustomDataset(csv_file="m_train.csv", root_dir="C:\\Users\\Radhika\\Downloads\\m_train_original", transform=train_transforms)
-    test_dataset = CustomDataset(csv_file="m_train.csv", root_dir="C:\\Users\\Radhika\\Downloads\\m_train_original", transform=test_transforms)
+    train_dataset = CustomDataset(csv_file="m_train.csv", root_dir="Link to your root directory", transform=train_transforms)
+    test_dataset = CustomDataset(csv_file="m_train.csv", root_dir="Link to your root directory", transform=test_transforms)
     
     batch_size = 4
     # Ensure dataset split sizes match the total length of the dataset
