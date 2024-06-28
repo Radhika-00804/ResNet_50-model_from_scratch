@@ -81,7 +81,31 @@ Data augmentation is a process that artificially generates new data from existin
     test_dataset = CustomDataset(csv_file="m_train.csv", root_dir="Path of your root directory", transform=test_transforms)
 ```
 
+**Identity Blocks**
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+The identity block is a fundamental building block in the ResNet-50 architecture that allows signals to flow directly between blocks in both directions. It's a standard block in ResNets that corresponds to when the input and output activations have the same dimensions.
 
+https://www.researchgate.net/publication/345342548/figure/fig5/AS:983188558057473@1611421827109/Building-blocks-for-the-ResNet50-A-Identity-block-and-B-Convolutional-block.png
+In this , shown below , it is a residual block with identity function in it:-
 
+```
+class block(nn.Module):
+    def __init__(self, in_channels, out_channels, identity_downsample=None, stride=1):
+        super(block, self).__init__()
+        self.expansion = 4
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride =1 , padding=0)
+        self.bn1 = nn.BatchNorm2d(out_channels)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size =3, stride=stride,padding=1)
+        self.bn2 = nn.BatchNorm2d(out_channels)
+        self.conv3 = nn.Conv2d(out_channels,out_channels*self.expansion,kernel_size=1, stride =1, padding=0)
+        self.bn3 = nn.BatchNorm2d(out_channels*self.expansion)
+        self.relu = nn.ReLU()
+        self.identity_downsample = identity_downsample
+```
+if, we pass nothing to class then downsample = None , as result identity will not changed.
 
-
+When we pass downsample = "some convolution layer" as class constructor argument, It will downsample the identity via passed convolution layer to sucessfully perform addition. this layer will downsample the identity through code as mentioned
+```
+  if self.downsample is not None:
+        identity = self.downsample(x)
+```
