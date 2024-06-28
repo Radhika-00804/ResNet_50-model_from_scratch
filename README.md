@@ -109,3 +109,83 @@ When we pass downsample = "some convolution layer" as class constructor argument
   if self.downsample is not None:
         identity = self.downsample(x)
 ```
+
+**Optimizer and Criterion**
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+An optimizer is a mathematical function or algorithm that adjusts a neural network's attributes, such as weights and learning rates, to reduce loss and improve accuracy during training. Optimizers are dependent on the model's learnable parameters, such as weights and biases.
+` optimizer = torch.optim.Adam(model.parameters(),lr=0.001)`
+Criterions are helpful to train a neural network. Given an input and a target, they compute a gradient according to a given loss function.
+`criterion = nn.MSELoss()`
+
+**Inference Time**
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+In a neural network, Inference time is the amount of time it takes for a model to use its learned knowledge to make predictions or evaluations based on new data. It's a critical factor in optimizing the efficiency of deep learning applications and is important for deploying models in real-world applications.
+Inference time is usually measured in milliseconds and can be calculated by estimating the time required to verify all candidate solutions in different scenarios. The accuracy of the neural network often correlates with its inference time, meaning that the more time it has to make a decision, the more accurate it can be.
+```
+     # Measure inference time for this batch
+            batch_start_time = time.time()
+            outputs = model(inputs)
+            batch_end_time = time.time()
+
+                # Calculate batch inference time and average per image
+            batch_inference_time = (batch_end_time - batch_start_time) / len(inputs)
+
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item()
+            tepoch.set_postfix(loss=running_loss / (i + 1), inference_time=batch_inference_time * 1000)
+
+    epoch_end_time = time.time()
+    epoch_inference_time = (epoch_end_time - epoch_start_time) / len(train_loader.dataset) * 1000
+```
+
+**Save the Model**
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+After train , validate and test the model , we save the model weights and biases for further usage of the model , due to which we do not want to train the whole model again and again , if we doing different tasks related to computer vision like object detection.
+```
+MODEL_PATH = Path("Model")
+MODEL_PATH.mkdir(parents=True, exist_ok=True)
+
+MODEL_NAME = "ResNet_50.pt"
+MODEL_PATH_SAVE = MODEL_PATH / MODEL_NAME
+
+print(f"Saving model to: {MODEL_PATH_SAVE}")
+torch.save(model, MODEL_PATH_SAVE)
+```
+
+**Accuracy of the model**
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+The accuracy of a neural network model is a metric that measures how well the model predicts positive and negative classes across all examples. It's calculated by dividing the number of correct predictions by the total number of predictions:
+
+```
+# Manually print an image and compare coordinates
+def print_image_and_compare(dataset, model, idx):
+    image, true_coords = dataset[idx]
+    true_coords = true_coords.numpy() * dataset.coord_max  # Denormalize coordinates
+    model.eval()
+    with torch.no_grad():
+        image_tensor = image.unsqueeze(0).to(device)
+        predicted_coords = model(image_tensor).cpu().numpy().flatten()
+
+    image = image.permute(1, 2, 0).numpy()
+    mean = np.array([0.485, 0.456, 0.406])
+    std = np.array([0.229, 0.224, 0.225])
+    image = std * image + mean
+    image = np.clip(image, 0, 1)
+
+    plt.imshow(image)
+    plt.title(f'True: {true_coords}\nPredicted: {predicted_coords}')
+    plt.show()
+
+    error = np.abs(true_coords - predicted_coords)
+    accuracy = 100 - np.mean(error / true_coords * 100)
+    print(f'Error: {error}')
+    print(f'Accuracy: {accuracy:.2f}%')
+
+# Test the function
+print_image_and_compare(test_dataset, model, 0)
+```
+
+In this model , I get the 80% accuracy which is not good overall but not bad at least... it gives the coordinated with not so much difference between true_coordinates and predicted_coordinates.
