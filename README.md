@@ -53,9 +53,33 @@ def __init__(self, csv_file, root_dir, transform=None,normalize=True):
         self.normalize = normalize
         self.coord_max = self.data.iloc[:, 2:].max().max()  # Assuming maximum value for normalization
 ```
+This file returns the annotated coordinates in the form of Tensor , as our model is made on pytorch and the model requires data is in number/Tensor form to recognize.
 
+**Data Augmentation**
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Data augmentation is a process that artificially generates new data from existing data to train machine learning models. It's an important step when building datasets because small datasets can cause machine learning models to "overfit".
+```
+# Define the data augmentation transforms
+    train_transforms = transforms.Compose([
+                       transforms.RandomResizedCrop(224),  # Randomly crop and resize to 224x224
+                       transforms.RandomHorizontalFlip(),  # Random horizontal flip
+                       transforms.RandomRotation(10),      # Random rotation up to 10 degrees
+                       transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),  # Random color jitter
+                       transforms.ToTensor(),
+                       transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalize the images
+    ])
 
+    test_transforms = transforms.Compose([
+                      transforms.Resize(256),
+                      transforms.CenterCrop(224),
+                      transforms.ToTensor(),
+                      transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
 
+    
+    train_dataset = CustomDataset(csv_file="m_train.csv", root_dir="Path of your root directory", transform=train_transforms)
+    test_dataset = CustomDataset(csv_file="m_train.csv", root_dir="Path of your root directory", transform=test_transforms)
+```
 
 
 
