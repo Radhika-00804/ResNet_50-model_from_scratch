@@ -188,10 +188,11 @@ for epoch in range(num_epochs):
     running_loss = 0.0
     epoch_start_time = time.time()
  
-    with tqdm(train_loader, unit="batch") as tepoch:
-        for i, (inputs, labels) in enumerate(tepoch):
+    with tqdm(train_loader, unit="batch") as tepoch:  # tqdm is used to represent the running of each epoch during the training by showing the progress bar in the terminal or console .
+        for i, (inputs, labels) in enumerate(tepoch):  
+            # set_desription is used to update the text in front of the progress bar 
             tepoch.set_description(f"Epoch {epoch+1}/{num_epochs}")
-            inputs, labels = inputs.to(device), labels.to(device)
+            inputs, labels = inputs.to(device), labels.to(device)  #set the mode of device whether work on CPU or GPU
             optimizer.zero_grad()
 
                 # Measure inference time for this batch
@@ -224,7 +225,7 @@ MODEL_PATH_SAVE = MODEL_PATH / MODEL_NAME
 print(f"Saving model to: {MODEL_PATH_SAVE}")
 torch.save(model, MODEL_PATH_SAVE)
 
-
+# this commented code is used to generate the accuracy of the code by getting the difference between the true coordinates and the predicted coordinates.
 # # Manually print an image and compare coordinates
 # def print_image_and_compare(dataset, model, idx):
 #     image, true_coords = dataset[idx]
