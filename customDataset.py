@@ -5,9 +5,10 @@ from PIL import Image
 import os
 import logging
 
-class CustomDataset(Dataset):
+class CustomDataset(Dataset): 
     def __init__(self, csv_file, root_dir, transform=None,normalize=True):
-        self.data = pd.read_csv(os.path.join(root_dir, csv_file))
+        # path.join is used to join one or more paths effectively  
+        self.data = pd.read_csv(os.path.join(root_dir, csv_file)) 
         self.root_dir = root_dir
         self.transform = transform
         self.normalize = normalize
